@@ -1,53 +1,54 @@
-import { useState } from 'react'
 import './App.css'
+import { useState, useEffect } from 'react'
+import axios from 'axios'
+import Row from './components/Row'
+
+const url = "http://localhost:3002" // tarkista, että serverisi portti vastaa tätä
 
 function App() {
   const [task, setTask] = useState('')
   const [tasks, setTasks] = useState([])
 
+  // Hae tehtävät kun komponentti mountataan
+  useEffect(() => {
+    axios.get(url)
+      .then(response => setTasks(response.data))
+      .catch(error => alert(error.response?.data?.message || error))
+  }, [])
+
+  // Lisää uusi tehtävä
   const addTask = () => {
-    const trimmed = task.trim()
-    if (!trimmed) return
-    setTasks([...tasks, trimmed])
-    setTask('')
+    if (!task.trim()) return // estä tyhjän lisääminen
+    const newTask = { description: task }
+    axios.post(url + "/create", { task: newTask })
+      .then(response => {
+        setTasks([...tasks, response.data])
+        setTask('')
+      })
+      .catch(error => alert(error.response?.data?.error || error))
   }
 
-  const deleteTask = (deleted) => {
-    const withoutRemoved = tasks.filter(item => item !== deleted)
-    setTasks(withoutRemoved)
+  // Poista tehtävä
+  const deleteTask = (id) => {
+    axios.delete(`${url}/delete/${id}`)
+      .then(() => setTasks(tasks.filter(t => t.id !== id)))
+      .catch(error => alert(error.response?.data?.error || error))
   }
 
   return (
-    <div id="container">
-      <h3>todos</h3>
-
-      <form onSubmit={(e) => { e.preventDefault(); addTask(); }}>
-        <input
-          placeholder="add new task"
-          value={task}
-          onChange={e => setTask(e.target.value)}
-          onKeyDown={e => {
-            if (e.key === 'Enter') {
-              e.preventDefault()
-              addTask()
-            }
-          }}
-        />
-      </form>
-
+    <div className="App">
+      <h1>Todo List</h1>
+      <input 
+        type="text" 
+        value={task} 
+        onChange={(e) => setTask(e.target.value)} 
+        placeholder="Add a new task" 
+      />
+      <button onClick={addTask}>Add</button>
       <ul>
-        {
-          tasks.map((item, index) => (
-            <li key={index}>
-              {item}
-              <button
-                className="delete-button"
-                onClick={() => deleteTask(item)}>
-                Delete
-              </button>
-            </li>
-          ))
-        }
+        {tasks.map(item => (
+          <Row key={item.id} item={item} deleteTask={deleteTask} />
+        ))}
       </ul>
     </div>
   )

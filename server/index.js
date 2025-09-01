@@ -3,7 +3,7 @@ import cors from "cors";
 import pkg from "pg";
 const { Pool } = pkg;
 
-const port = 3001;
+const port = 3002;
 const app = express();
 
 app.use(cors());
