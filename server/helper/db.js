@@ -1,23 +1,10 @@
-import pkg from "pg"
-import dotenv from "dotenv"
+import pkg from "pg";
+const { Pool } = pkg;
 
-dotenv.config()
-const { Pool } = pkg
-const environment = process.env.NODE_ENV || "development"
-
-const openDb = () => {
-  return new Pool({
-    user: process.env.DB_USER,
-    host: process.env.DB_HOST,
-    database:
-      environment === "development"
-        ? process.env.DB_NAME
-        : process.env.TEST_DB_NAME,
-    password: process.env.DB_PASSWORD,
-    port: process.env.DB_PORT,
-  })
-}
-
-const pool = openDb()
-export { pool }
-
+export const pool = new Pool({
+  user: "postgres",
+  host: "localhost",
+  database: process.env.NODE_ENV === "test" ? "todo25_test" : "todo25",
+  password: "root",
+  port: 5432,
+});
