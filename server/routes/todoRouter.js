@@ -31,6 +31,7 @@ router.delete("/delete/:id", auth, (req, res, next) => {
   pool.query("DELETE FROM task WHERE id=$1 RETURNING *", [id], (err, result) => {
     if (err) return next(err);
     if (result.rows.length === 0) return res.status(404).json({ error: "Task not found" });
+    // palautetaan id (testisi odottaa id kenttää)
     res.status(200).json({ id: result.rows[0].id });
   });
 });
