@@ -16,7 +16,6 @@ app.use(express.urlencoded({ extended: false }));
 app.use('/', todoRouter);
 app.use('/user', userRouter);
 
-// Error handling middleware (palauttaa JSONin, ei HTML:ia)
 app.use((err, req, res, next) => {
   const statusCode = err.status || 500;
   res.status(statusCode).json({

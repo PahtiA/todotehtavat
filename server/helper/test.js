@@ -8,12 +8,10 @@ import { hash } from "bcrypt";
 import jwt from "jsonwebtoken";
 import { fileURLToPath } from "url";
 
-// Oikea dirname ES-moduuleissa
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-// Initialize test DB
 export const initializeTestDb = () => {
-  const sqlPath = path.resolve(__dirname, "../db.sql"); // db.sql server-kansion juuressa
+  const sqlPath = path.resolve(__dirname, "../db.sql");
   const sql = fs.readFileSync(sqlPath, "utf8");
   return new Promise((resolve, reject) => {
     pool.query(sql, (err) => {
